@@ -1,3 +1,4 @@
+
 var questions = [
     {
       title: "Commonly used data types DO NOT include:",
@@ -32,3 +33,4 @@ var questions = [
         answer: "console.log"
       }
   ];
+ 
