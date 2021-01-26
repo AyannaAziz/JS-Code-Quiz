@@ -15,7 +15,7 @@ In the end, the user's score will be stored using local storage and added to a h
 - HTML
 - CSS
 - Bootstrap
--Javascript
+- Javascript/ JQuery
 
 ## Demo
 
