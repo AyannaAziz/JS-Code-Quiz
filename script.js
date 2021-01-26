@@ -29,6 +29,23 @@ document.addEventListener('DOMContentLoaded', (event) => {
 		queryElement(element).classList.remove('hide');
 	}
 
+    // function to reset HTML display for the score
+	let recordsHtmlReset = () => {
+		queryElement('#highScores div').innerHTML = "";
+		var i = 1;
+		recordsArray.sort((a, b) => b.score - a.score);
+		Array.from(recordsArray).forEach(check =>
+		{
+			var scores = document.createElement("div");
+			scores.innerHTML = i + ". " + check.initialRecord + " - " + check.score;
+			queryElement('#highScores div').appendChild(scores);
+			i = i + 1
+		});
+		i = 0;
+		Array.from(answers).forEach(answer => {
+			answer.classList.remove('disable');
+		});
+	}
 	
 	// function to set the question data in questionHolder section
 	let setQuestionData = () => {
@@ -96,7 +113,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
 		}, 1000);
 	}
 
-//controls
+	//controls for quiz
 
 	// Create an array of selected divs so I can refer to them with the this keyword and replace their values to then check against the answer property for all questions.
 	Array.from(answers).forEach(check => {
@@ -115,4 +132,70 @@ document.addEventListener('DOMContentLoaded', (event) => {
 		});
 	});
 
-	
+	//score submission
+
+	// Displays error message if initials given do not meet requirements
+	let errorIndicator = () => {
+		clearTimeout(timeset);
+		timeset = setTimeout(() => {
+			queryElement('#errorIndicator').classList.add('invisible');
+		}, 3000);
+	}
+
+	// Error handling for submitting high scores
+	queryElement("#records button").addEventListener("click", () => {
+		let initialsRecord = queryElement('#initials').value;
+		if (initialsRecord === ''){
+			queryElement('#errorIndicator p').innerHTML = "You need at least 1 character";
+			queryElement('#errorIndicator').classList.remove('invisible', errorIndicator());
+		} else if (initialsRecord.match(/[[A-Za-z]/) === null) {
+			queryElement('#errorIndicator p').innerHTML = "Only letters for initials allowed.";
+			queryElement('#errorIndicator').classList.remove('invisible', errorIndicator());
+		} else if (initialsRecord.length > 5) {
+			queryElement('#errorIndicator p').innerHTML = "Maximum of 5 characters allowed.";
+			queryElement('#errorIndicator').classList.remove('invisible', errorIndicator());
+		} else {
+			//Sends value to current array for use now.
+			recordsArray.push({
+				"initialRecord": initialsRecord,
+				"score": score
+			});
+			//Sends value to local storage for later use.
+			localStorage.setItem('recordsArray', JSON.stringify(recordsArray));
+			queryElement('#highScores div').innerHTML = '';
+			onlyDisplaySection("#highScores");
+			recordsHtmlReset();
+			queryElement("#initials").value = '';
+		}
+	});
+
+//controls for high score array and local storage
+
+	// Clears highscores from the html, array and localstorage
+	queryElement("#clearScores").addEventListener("click", () => {
+		recordsArray = [];
+		queryElement('#highScores div').innerHTML = "";
+		localStorage.removeItem('recordsArray');
+	});
+
+	// Resets all quiz settings to the default to replay the quiz
+	queryElement("#reset").addEventListener("click", () => {
+		time = initialTime;
+		score = 0;
+		qCount = 0;
+		onlyDisplaySection("#intro");
+	});
+
+	// If a player pushes the view high scores button in the html view then this abdandons all quiz progress and lets them view the high scores.
+	queryElement("#scores").addEventListener("click", (e) => {
+		e.preventDefault();
+		clearInterval(clock);
+		queryElement('#time').innerHTML = 0;
+		time = initialTime;
+		score = 0;
+		qCount = 0;
+		onlyDisplaySection("#highScores");
+		recordsHtmlReset();
+	});
+
+});
