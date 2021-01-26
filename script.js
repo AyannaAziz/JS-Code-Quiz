@@ -14,4 +14,13 @@ document.addEventListener('DOMContentLoaded', (event) => {
 	(localStorage.getItem('recordsArray')) ? recordsArray = JSON.parse(localStorage.getItem('recordsArray')): recordsArray = [];
 
 
-}
+	// FUNCTION to hide all sections then unhide the one provided by the parameter
+	let onlyDisplaySection = (element) => {
+		let sections = document.querySelectorAll("section");
+		Array.from(sections).forEach((userItem) => {
+			userItem.classList.add('hide');
+		});
+		queryElement(element).classList.remove('hide');
+	}
+
+});
